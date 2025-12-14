@@ -65,6 +65,46 @@ def overview(
     typer.echo("\nКолонки:")
     typer.echo(summary_df.to_string(index=False))
 
+@app.command()
+def sample(
+    path: str = typer.Argument(..., help = "Путь к CSV-файлу"),
+    args: int = typer.Argument(None, help="Сколько элементов взять"),
+    encoding: str = typer.Option('utf-8',help="Кодировка"), 
+    out_dir: str = typer.Option("",help="Каталог, в который можно загрузить выборку"),
+    sep: str = typer.Option(",", help="Разделитель CSV"),
+    head: bool = typer.Option(False, help="Брать ли выборку из начала"),
+    tail: bool = typer.Option(False, help="Брать ли выборку из конца"),
+    seed: int = typer.Option(None,help="индекс, с которого надо начать")
+) -> None:
+    """
+    Получить выборку из n элементов
+    """
+
+    df = _load_csv(Path(path),sep=sep,encoding=encoding)
+    result_df = None
+    if args <=0:
+        raise typer.BadParameter("Введите натуральное количество аргументов")
+    elif sum([head,tail,seed is not None]) > 1:
+        raise typer.BadParameter("Пожалуйста, введите 1 значение отсчета")
+    elif head:
+        result_df = df.iloc[:args]
+    elif tail:
+        result_df =df.iloc[-args:]
+    elif seed:
+        if seed < 0:
+            result_df = df.iloc[seed:len(df)-seed - args]
+        else:
+            result_df = df.iloc[seed:seed+args]
+    else:
+        result_df = df.sample(n=args)
+    typer.echo(result_df)
+    if out_dir != "":
+        out_root = Path(out_dir)
+        out_root.mkdir(parents=True, exist_ok=True)
+        output_path = out_root / f"sample_{Path(path).stem}.csv"
+        result_df.to_csv(output_path,sep=sep,encoding=encoding)
+    
+
 
 @app.command()
 def report(
