@@ -21,6 +21,30 @@ def _sample_df() -> pd.DataFrame:
         }
     )
 
+def _another_df() -> pd.DataFrame:
+    return pd.DataFrame({
+    'age': [25, 30, 35, 28, 32, 150, 29, 31, 200, 27],  # 150 и 200 - выбросы
+    'salary': [50000, 55000, 60000, 52000, 58000, 1000000, 53000, 56000, 1200000, 51000],  # 1M+ - выбросы
+    'score': [75, 80, 85, 78, 82, 95, 77, 81, 200, 76],  # 200 - выброс
+    'height': [170, 175, 180, 172, 178, 250, 171, 176, 300, 169],  # 250 и 300 - выбросы
+    'department': ['IT', 'HR', 'IT', 'Sales', 'HR', 'IT', 'Sales', 'IT', 'HR', 'Sales'],
+    'experience': [2, 5, 3, 1, 4, 50, 2, 3, 60, 1],  # 50 и 60 - выбросы
+    'sex': [None,None,None,None,'m','f','f',None,None,None],
+    'city': ['Moscow','Moscow','Moscow','Moscow','Moscow','Moscow','Moscow','Moscow','Moscow','Moscow']
+})
+def save():
+    _another_df.to_csv('./data/another.csv')
+
+def test_outliners_in():
+    df = _another_df()
+    summary = summarize_dataset(df)
+    miss = missing_table(df)
+    qf = compute_quality_flags(summary, miss, 2.5,0.3)
+    assert qf["how_many_empties"] == ['sex']
+    assert qf["too_many_missing"] == True
+    assert qf["may_have_outliers"] == [['score',200.0,'toobig']]
+    assert all(df['age'] >= 18) 
+
 
 def test_summarize_dataset_basic():
     df = _sample_df()
@@ -44,7 +68,7 @@ def test_missing_table_and_quality_flags():
     assert missing_df.loc["age", "missing_count"] == 1
 
     summary = summarize_dataset(df)
-    flags = compute_quality_flags(summary, missing_df)
+    flags = compute_quality_flags(summary, missing_df,2.5,0.3)
     assert 0.0 <= flags["quality_score"] <= 1.0
 
 
@@ -59,3 +83,4 @@ def test_correlation_and_top_categories():
     city_table = top_cats["city"]
     assert "value" in city_table.columns
     assert len(city_table) <= 2
+

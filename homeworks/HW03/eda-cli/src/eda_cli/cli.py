@@ -25,6 +25,7 @@ from .viz import (
 app = typer.Typer(help="Мини-CLI для EDA CSV-файлов")
 
 
+
 def _load_csv(
     path: Path,
     sep: str = ",",
@@ -123,7 +124,7 @@ def report(
                 f.write(f"\t**Столбец: {name}, значение: {value} , тип выброса: {category}**\n")
         else:
             f.write("Выбросов не обнаружено\n")
-        f.write(f"- В каких строках много пропусков( >30% ): **{'Нет таких' if quality_flags['how_many_empties'] == []  else ', '.join( i for i in quality_flags['how_many_empties'])}**\n")
+        f.write(f"- В каких столбцах много пропусков( >{empt_border*100}% ): **{'Нет таких' if quality_flags['how_many_empties'] == []  else ', '.join( i for i in quality_flags['how_many_empties'])}**\n")
         f.write(f"- Слишком мало строк: **{quality_flags['too_few_rows']}**\n")
         f.write(f"- Слишком много колонок: **{quality_flags['too_many_columns']}**\n")
         f.write(f"- Слишком много пропусков: **{quality_flags['too_many_missing']}**\n\n")

@@ -104,6 +104,7 @@ def summarize_dataset(
     return DatasetSummary(n_rows=n_rows, n_cols=n_cols, columns=columns)
 
 
+
 def missing_table(df: pd.DataFrame) -> pd.DataFrame:
     """
     Таблица пропусков по колонкам: count/share.
