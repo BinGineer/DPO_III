@@ -170,7 +170,7 @@ def top_categories(
     return result
 
 
-def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame) -> Dict[str, Any]:
+def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame, count_stds, border) -> Dict[str, Any]:
     """
     Простейшие эвристики «качества» данных:
     - слишком много пропусков;
@@ -180,7 +180,32 @@ def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame) -> 
     flags: Dict[str, Any] = {}
     flags["too_few_rows"] = summary.n_rows < 100
     flags["too_many_columns"] = summary.n_cols > 100
-
+    count_constant = 0
+    for i in summary.columns:
+        if i.unique == 1:
+            count_constant += 1
+    flags["has_constant_columns"] = count_constant
+    out = []
+    for i in summary.columns:
+        if not i.is_numeric:
+            continue
+        if i.max is not None and i.min is not None and i.std is not None and i.std != 0 and i.mean is not None:
+            if i.max > i.mean + count_stds* i.std:
+                out.append([i.name,i.max,'toobig'])
+            if i.min < i.mean - count_stds* i.std:
+                out.append([i.name, i.min,'toosmall'])    
+            
+    flags["may_have_outliers"] = out
+    flaged_by_nulls_colums = []
+    for i in summary.columns:
+        total = i.non_null+i.missing
+        if total != 0:
+            if i.missing/(total) > border:
+                flaged_by_nulls_colums.append(i.name)
+        else:
+            flaged_by_nulls_colums = "таблица пуста"
+            break
+    flags["how_many_empties"] = flaged_by_nulls_colums
     max_missing_share = float(missing_df["missing_share"].max()) if not missing_df.empty else 0.0
     flags["max_missing_share"] = max_missing_share
     flags["too_many_missing"] = max_missing_share > 0.5
@@ -192,6 +217,10 @@ def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame) -> 
         score -= 0.2
     if summary.n_cols > 100:
         score -= 0.1
+    if flaged_by_nulls_colums != "таблица пуста" and len(flaged_by_nulls_colums)/summary.n_cols <0.3:
+        score -= 0.3
+    if flaged_by_nulls_colums == "таблица пуста":
+        score = 0 
 
     score = max(0.0, min(1.0, score))
     flags["quality_score"] = score

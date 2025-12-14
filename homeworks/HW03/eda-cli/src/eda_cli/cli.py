@@ -37,6 +37,11 @@ def _load_csv(
     except Exception as exc:  # noqa: BLE001
         raise typer.BadParameter(f"Не удалось прочитать CSV: {exc}") from exc
 
+@app.command()
+def hello(
+    name: str = typer.Option('...')
+) -> None:
+    typer.echo(f'Hello, {name}' if name != '...' else 'Hello')
 
 @app.command()
 def overview(
@@ -67,6 +72,10 @@ def report(
     sep: str = typer.Option(",", help="Разделитель в CSV."),
     encoding: str = typer.Option("utf-8", help="Кодировка файла."),
     max_hist_columns: int = typer.Option(6, help="Максимум числовых колонок для гистограмм."),
+    title: str = typer.Option("EDA-отчет", help="Текст заголовка"),
+    title_size: int = typer.Option(1, help="Размер заголовка от 1 до 6, по убыванию"),
+    count_stds: float = typer.Option(2.5, help='На сколько стандартных отклонений значение должно отличаться от среднего, чтобы стать подозрением на выброс'),
+    empt_border: float = typer.Option(0.3,help='Доля пустых значений, при превышении которой столбец считается значительно пустым, для корректной работы указывать от 0.0 до 1.0')
 ) -> None:
     """
     Сгенерировать полный EDA-отчёт:
@@ -87,9 +96,8 @@ def report(
     missing_df = missing_table(df)
     corr_df = correlation_matrix(df)
     top_cats = top_categories(df)
-
     # 2. Качество в целом
-    quality_flags = compute_quality_flags(summary, missing_df)
+    quality_flags = compute_quality_flags(summary, missing_df, count_stds,empt_border)
 
     # 3. Сохраняем табличные артефакты
     summary_df.to_csv(out_root / "summary.csv", index=False)
@@ -102,16 +110,24 @@ def report(
     # 4. Markdown-отчёт
     md_path = out_root / "report.md"
     with md_path.open("w", encoding="utf-8") as f:
-        f.write(f"# EDA-отчёт\n\n")
+        f.write(f"{'#'*title_size} {title}\n\n")
         f.write(f"Исходный файл: `{Path(path).name}`\n\n")
-        f.write(f"Строк: **{summary.n_rows}**, столбцов: **{summary.n_cols}**\n\n")
-
+        f.write(f"Строк: **{summary.n_rows}**, столбцов: **{summary.n_cols}**\n\n")      
         f.write("## Качество данных (эвристики)\n\n")
         f.write(f"- Оценка качества: **{quality_flags['quality_score']:.2f}**\n")
         f.write(f"- Макс. доля пропусков по колонке: **{quality_flags['max_missing_share']:.2%}**\n")
+        if quality_flags['may_have_outliers']:
+            f.write("- Возможные выбросы:\n")
+            for i in quality_flags['may_have_outliers']:
+                name,value,category = i
+                f.write(f"\t**Столбец: {name}, значение: {value} , тип выброса: {category}**\n")
+        else:
+            f.write("Выбросов не обнаружено\n")
+        f.write(f"- В каких строках много пропусков( >30% ): **{'Нет таких' if quality_flags['how_many_empties'] == []  else ', '.join( i for i in quality_flags['how_many_empties'])}**\n")
         f.write(f"- Слишком мало строк: **{quality_flags['too_few_rows']}**\n")
         f.write(f"- Слишком много колонок: **{quality_flags['too_many_columns']}**\n")
         f.write(f"- Слишком много пропусков: **{quality_flags['too_many_missing']}**\n\n")
+        f.write(f"- Сколько константных столбцов: **{quality_flags['has_constant_columns']}**\n\n")
 
         f.write("## Колонки\n\n")
         f.write("См. файл `summary.csv`.\n\n")
