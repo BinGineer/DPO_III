@@ -1,0 +1,11 @@
+age,salary,score,height,department,experience,sex,city
+25,50000,75,170,IT,2,,Moscow
+30,55000,80,175,HR,5,,Moscow
+35,60000,85,180,IT,3,,Moscow
+28,52000,78,172,Sales,1,,Moscow
+32,58000,82,178,HR,4,m,Moscow
+150,1000000,95,250,IT,50,f,Moscow
+29,53000,77,171,Sales,2,f,Moscow
+31,56000,81,176,IT,3,,Moscow
+200,1200000,200,300,HR,60,,Moscow
+27,51000,76,169,Sales,1,,Moscow
