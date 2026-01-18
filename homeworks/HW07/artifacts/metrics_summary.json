@@ -41,7 +41,7 @@
       "silhouette": 0.31554470037825183,
       "davies_bouldin": 1.1577256320598661,
       "calinski_harabasz": 6957.162639510166,
-      "inertia": 31123.461050187816
+      "inertia": 31123.461050187812
     },
     "dbscan": {
       "eps": 0.7,
