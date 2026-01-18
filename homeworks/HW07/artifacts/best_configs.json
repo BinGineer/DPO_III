@@ -1,0 +1,37 @@
+{
+  "dataset_01": {
+    "best_method": "dbscan",
+    "criterion": "silhouette (0.379 vs 0.355)",
+    "params": {
+      "eps": 0.7,
+      "min_samples": 3,
+      "n_clusters": 5,
+      "noise_%": 0.3,
+      "silhouette": 0.379168211581392,
+      "davies_bouldin": 1.263124044543641,
+      "calinski_harabasz": 8330.876730950336
+    }
+  },
+  "dataset_02": {
+    "best_method": "kmeans",
+    "criterion": "CH (111.6 vs 4262)",
+    "params": {
+      "k": 17,
+      "silhouette": 0.28271302736758425,
+      "davies_bouldin": 0.960998515281661,
+      "calinski_harabasz": 2310.6077654316787,
+      "inertia": 4262.2227392935565
+    }
+  },
+  "dataset_03": {
+    "best_method": "kmeans",
+    "criterion": "CH(13 vs 6957),silhouette (0.31 vs 0.2315)",
+    "params": {
+      "k": 3,
+      "silhouette": 0.31554470037825183,
+      "davies_bouldin": 1.1577256320598661,
+      "calinski_harabasz": 6957.162639510166,
+      "inertia": 31123.461050187816
+    }
+  }
+}
