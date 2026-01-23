@@ -1,18 +1,18 @@
 {
-  "best_model_label": "HistGradientBoosting",
+  "best_model_label": "Boosting",
   "test_metrics": {
-    "accuracy": 0.9363333333333334,
-    "f1": 0.8982418753329782,
-    "roc_auc": 0.9746823421867858,
-    "model": "HistGradientBoosting"
+    "accuracy": 0.936,
+    "f1": 0.8973262032085562,
+    "roc_auc": 0.974592453405109,
+    "model": "Boosting"
   },
   "search_summary": {
     "best_params": {
       "learning_rate": 0.1,
-      "max_depth": null,
+      "max_depth": 10,
       "max_leaf_nodes": 63
     },
-    "best_cv_roc_auc": 0.9719880531240899
+    "best_cv_roc_auc": 0.9724270126864617
   },
   "random_state": 42
 }

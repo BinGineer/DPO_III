@@ -1,34 +1,40 @@
 {
-  "results": [
-    {
-      "accuracy": 0.9363333333333334,
-      "f1": 0.8982418753329782,
-      "roc_auc": 0.9746823421867858,
-      "model": "HistGradientBoosting"
+  "metadata": {
+    "experiment": "HW06 Binary Classification",
+    "dataset": "S06-hw-dataset-01.csv",
+    "target_variable": "target",
+    "test_size": 0.25,
+    "random_state": 42,
+    "stratify": true,
+    "cv_folds": 5,
+    "cv_scoring": "roc_auc",
+    "timestamp": "2026-01-23T20:38:26.231235"
+  },
+  "models": {
+    "Boosting": {
+      "accuracy": 0.936,
+      "f1": 0.8973262032085562,
+      "roc_auc": 0.974592453405109
     },
-    {
+    "RandomForest": {
       "accuracy": 0.9346666666666666,
       "f1": 0.8942826321467098,
-      "roc_auc": 0.97060992331522,
-      "model": "RandomForest"
+      "roc_auc": 0.97060992331522
     },
-    {
+    "DecisionTree": {
       "accuracy": 0.8633333333333333,
       "f1": 0.7848898216159497,
-      "roc_auc": 0.9105332385353713,
-      "model": "DecisionTree"
+      "roc_auc": 0.9105332385353713
     },
-    {
+    "LogisticRegression": {
       "accuracy": 0.8296666666666667,
       "f1": 0.7146845337800112,
-      "roc_auc": 0.878905083540704,
-      "model": "LogReg(scaled)"
+      "roc_auc": 0.878905083540704
     },
-    {
+    "Dummy": {
       "accuracy": 0.6766666666666666,
       "f1": 0.0,
-      "roc_auc": 0.5,
-      "model": "Dummy(most_frequent)"
+      "roc_auc": 0.5
     }
-  ]
+  }
 }
