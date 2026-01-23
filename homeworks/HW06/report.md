@@ -39,22 +39,22 @@ Pipeline: StandardScaler + LogisticRegression
 
 - DecisionTreeClassifier:
 Подбор гиперпараметров:
-max_depth: [None, 3, 5, 8]
+max_depth: [50, 3, 5, 8] 
 min_samples_leaf: [1, 5, 10, 20]
 ccp_alpha: [0.0, 0.001, 0.005, 0.01]
-Контроль сложности через все три параметра
+Контроль сложности через все три параметра. Большое значение max_depth здесь и в примерах ниже выбрано как аналог отсутствия ограничения по глубине.
 RandomForestClassifier:
 
 - Количество деревьев: 600 (фиксировано)
 Подбор:
-max_depth: [None, 6, 10]
+max_depth: [50, 6, 10]
 min_samples_leaf: [1, 5, 10]
 max_features: ['sqrt', 0.5]
 
 - HistGradientBoostingClassifier (boosting):
 Подбор:
 learning_rate: [0.03, 0.05, 0.1]
-max_depth: [2, 3, None]
+max_depth: [2, 3, 10]
 max_leaf_nodes: [15, 31, 63]
 
 
